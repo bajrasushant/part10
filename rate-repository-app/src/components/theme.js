@@ -8,6 +8,7 @@ const theme = {
     secondaryBackground: "#FAFAFA",
     tertiaryBackground: "#E0E0E0",
     blueBackground: "#0277BD",
+    errorColor: "#d73a4a",
   },
   fontSizes: {
     body: 15,
