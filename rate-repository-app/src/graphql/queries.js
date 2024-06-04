@@ -24,3 +24,25 @@ export const GET_REPOSITORIES = gql`
     }
   }
 `;
+
+export const SIGNIN = gql`
+  mutation Mutation($credentials: AuthenticateInput) {
+    authenticate(credentials: $credentials) {
+      accessToken
+      user {
+        username
+        createdAt
+        id
+      }
+    }
+  }
+`;
+
+export const USER = gql`
+  query Me {
+    me {
+      id
+      username
+    }
+  }
+`;
