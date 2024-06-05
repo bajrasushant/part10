@@ -33,7 +33,7 @@ const SignIn = () => {
         const token = await authStorage.getAccessToken();
         if (data.authenticate.accessToken === token){
           dispatch({ type: "SIGNIN" })
-          navigate("/reviewed_repositories_list");
+          navigate("/");
         }
       } catch (e) {
         console.error(e);

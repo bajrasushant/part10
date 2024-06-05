@@ -1,6 +1,7 @@
 import { Image, StyleSheet, View } from "react-native";
 import Text from "./Text";
 import theme from "./theme";
+import { formatCounts } from "../utils/helpers";
 
 const RepositoryItem = (props) => {
   const styles = StyleSheet.create({
@@ -57,38 +58,27 @@ const RepositoryItem = (props) => {
     { count: ratingAverage, label: "Rating" },
   ];
 
-  const formatCounts = (count) => {
-    if (count < 1000) return count;
-    const digit = count / 1000;
-    const frontDigit = Math.floor(digit);
-    const afterDecimal = Math.round((digit % 1) * 10);
-    if (afterDecimal === 0) {
-      return frontDigit + "k";
-    }
-    return `${frontDigit}.${afterDecimal}k`;
-  };
-
   const RepoDetails = () => (
     <View style={styles.repoDetailsContainer}>
-      <Text fontWeight="bold">{fullName}</Text>
-      <Text color="textTertiary">{description}</Text>
+      <Text testID="fullName" fontWeight="bold">{fullName}</Text>
+      <Text testID="description" color="textTertiary">{description}</Text>
       <View style={{ flexDirection: "row", flexShrink: 1 }}>
         <View style={styles.languageContainer}>
-          <Text style={styles.language}>{language}</Text>
+          <Text testID="language" style={styles.language}>{language}</Text>
         </View>
       </View>
     </View>
   );
 
   const NumbersDetails = ({ detail }) => (
-    <View style={styles.numberContainer}>
+    <View testID={detail.label} style={styles.numberContainer}>
       <Text fontWeight="bold">{formatCounts(detail.count)}</Text>
       <Text color="textTertiary">{detail.label}</Text>
     </View>
   );
 
   return (
-    <View style={styles.mainContainer}>
+    <View testID="repositoryItem" style={styles.mainContainer}>
       <View style={styles.detailsContainer}>
         <Image style={styles.tinyLogo} source={{ uri: ownerAvatarUrl }} />
         <RepoDetails />
