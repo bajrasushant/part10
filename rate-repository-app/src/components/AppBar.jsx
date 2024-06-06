@@ -38,7 +38,6 @@ const AppBar = () => {
     return null;
   }
 
-
   if (error) {
     console.error("Error fetching user data:", error);
     return (
@@ -63,9 +62,14 @@ const AppBar = () => {
             <Text style={styles.appBarTab}>Sign in</Text>
           </Link>
         ) : (
-          <Pressable onPress={signout}>
-            <Text style={styles.appBarTab}>Sign Out</Text>
-          </Pressable>
+          <>
+            <Link to="/create_review">
+              <Text style={styles.appBarTab}>Create a review</Text>
+            </Link>
+            <Pressable onPress={signout}>
+              <Text style={styles.appBarTab}>Sign Out</Text>
+            </Pressable>
+          </>
         )}
       </ScrollView>
     </View>
