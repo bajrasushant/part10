@@ -1,7 +1,8 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import Text from "./Text";
 import theme from "./theme";
 import { formatCounts } from "../utils/helpers";
+import { openURL } from "expo-linking";
 
 const RepositoryItem = (props) => {
   const styles = StyleSheet.create({
@@ -37,16 +38,25 @@ const RepositoryItem = (props) => {
     },
     language: {
       color: theme.colors.textSecondary,
-    }
+    },
+    githubButton: {
+      backgroundColor: theme.colors.blueBackground,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 15,
+      borderRadius: 5,
+    },
   });
 
-  const { repository } = props;
+  const { repository, showGithubButton } = props;
 
   const {
     ownerAvatarUrl,
     fullName,
     description,
-    language, stargazersCount, forksCount,
+    language,
+    stargazersCount,
+    forksCount,
     reviewCount,
     ratingAverage,
   } = repository;
@@ -60,11 +70,17 @@ const RepositoryItem = (props) => {
 
   const RepoDetails = () => (
     <View style={styles.repoDetailsContainer}>
-      <Text testID="fullName" fontWeight="bold">{fullName}</Text>
-      <Text testID="description" color="textTertiary">{description}</Text>
+      <Text testID="fullName" fontWeight="bold">
+        {fullName}
+      </Text>
+      <Text testID="description" color="textTertiary">
+        {description}
+      </Text>
       <View style={{ flexDirection: "row", flexShrink: 1 }}>
         <View style={styles.languageContainer}>
-          <Text testID="language" style={styles.language}>{language}</Text>
+          <Text testID="language" style={styles.language}>
+            {language}
+          </Text>
         </View>
       </View>
     </View>
@@ -88,6 +104,11 @@ const RepositoryItem = (props) => {
           <NumbersDetails key={index} detail={detail} />
         ))}
       </View>
+      {showGithubButton ? (
+        <Pressable style={styles.githubButton} onPress={() => openURL(`${repository.url}`)}>
+          <Text color="textSecondary" fontWeight="bold">Open in GitHub</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 };
