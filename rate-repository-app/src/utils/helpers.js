@@ -8,3 +8,14 @@ export const formatCounts = (count) => {
   }
   return `${frontDigit}.${afterDecimal}k`;
 };
+
+export const formatDate = (dateString) => {
+  const parseDate = new Date(dateString);
+  if (isNaN(parseDate.getTime())) {
+    return dateString;
+  }
+  const year = parseDate.getFullYear();
+  const month = String(parseDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parseDate.getDate()).padStart(2, "0");
+  return `${day}.${month}.${year}`;
+};

@@ -2,14 +2,49 @@ import { useParams } from "react-router-native";
 import Text from "./Text";
 import useRepository from "../hooks/useRepository";
 import RepositoryItem from "./RepositoryItem";
+import { FlatList, View } from "react-native";
+import useReviews from "../hooks/useReviews";
+import { ItemSeparator } from "./RepositoryList";
+import ReviewItem from "./ReviewItem";
+
+
+const RepositoryInfo = ({ repository }) => (
+  <View>
+    <RepositoryItem repository={repository} showGithubButton={true} />
+    <ItemSeparator />
+  </View>
+);
 
 const SingleRepositoryItem = () => {
   const { repoId } = useParams();
-  const { loading, error, repository } = useRepository(repoId);
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error fetching data</Text>;
+  const {
+    repository,
+    loading: repoLoading,
+    error: repoError,
+  } = useRepository(repoId);
 
-  return <RepositoryItem repository={repository} showGithubButton={true} />;
+  const {
+    reviews,
+    loading: reviewsLoading,
+    error: reviewsError,
+  } = useReviews(repoId);
+
+  if (repoLoading || reviewsLoading) return <Text>Loading...</Text>;
+  if (repoError || reviewsError) return <Text>Error fetching data</Text>;
+
+  const reviewNodes = reviews ? reviews.edges.map((edge) => edge.node) : [];
+
+  return (
+    <FlatList
+      data={reviewNodes}
+      renderItem={({ item }) => <ReviewItem review={item} />}
+      keyExtractor={({ id }) => id}
+      ItemSeparatorComponent={ItemSeparator}
+      ListHeaderComponent={() => (
+        <RepositoryInfo repository={repository} />
+      )}
+    />
+  );
 };
 
 export default SingleRepositoryItem;

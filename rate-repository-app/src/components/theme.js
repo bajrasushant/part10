@@ -11,6 +11,7 @@ const theme = {
     tertiaryBackground: "#E0E0E0",
     blueBackground: "#0277BD",
     errorColor: "#d73a4a",
+    blueBorder: "#039BE5"
   },
   fontSizes: {
     body: 15,
