@@ -1,53 +1,33 @@
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import * as yup from "yup";
 import useCreateReview from "../hooks/useCreateReview";
-import { useFormik } from "formik";
 import { useNavigate } from "react-router-native";
-import Text from "./Text";
 import theme from "./theme";
 import { useEffect } from "react";
+import FormikTextInput from "./FormikTextInput";
+import SubmitButton from "./SubmitButton";
+import { Formik } from "formik";
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.secondaryBackground,
     padding: 20,
-    gap: 20,
   },
-  inputTexts: {
-    height: 60,
-    borderWidth: 1,
-    padding: 10,
-    borderColor: theme.colors.tertiaryBackground,
-    borderRadius: 5,
-    fontSize: theme.fontSizes.body,
-  },
-  textInvalid: {
-    borderColor: theme.colors.errorColor,
-  },
-  submitButton: {
-    backgroundColor: theme.colors.blueBackground,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  errorText: {
-    color: "red",
-    fontStyle: "italic",
-  },
+});
+
+const validationSchema = yup.object().shape({
+  ownerName: yup.string().required("Repository owner name is required"),
+  repositoryName: yup.string().required("Repository name is required"),
+  rating: yup
+    .number("Rating must be a number")
+    .min(1, "Min is 1.")
+    .max(99, "Max is 99.")
+    .required("Rating should be between 0 to 100"),
+  text: yup.string().optional(),
 });
 
 const AddReview = () => {
   const [createReview, result] = useCreateReview();
-  const validationSchema = yup.object().shape({
-    ownerName: yup.string().required("Repository owner name is required"),
-    repositoryName: yup.string().required("Repository name is required"),
-    rating: yup
-      .number("Rating must be a number")
-      .min(1, "Min is 1.")
-      .max(99, "Max is 99.")
-      .required("Rating should be between 0 to 100"),
-    text: yup.string().optional(),
-  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,72 +36,50 @@ const AddReview = () => {
     }
   }, [result.data]);
 
-  const formik = useFormik({
-    initialValues: {
-      ownerName: "",
-      repositoryName: "",
-      rating: "",
-      text: "",
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      try {
-        await createReview({
-          variables: {
-            review: {
-              ...values,
-              rating: Number(values.rating),
-            },
-          },
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    },
-  });
+  const initialValues = {
+    ownerName: "",
+    repositoryName: "",
+    rating: "",
+    text: "",
+  };
+
+  const handleSubmit = async (values) => {
+    await createReview({
+      variables: {
+        review: {
+          ...values,
+          rating: Number(values.rating),
+        },
+      },
+    });
+  };
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        value={formik.values.ownerName}
-        onChangeText={formik.handleChange("ownerName")}
-        placeholder="Repository owner name"
-        style={[styles.inputTexts]}
-      />
-      {formik.touched.ownerName && formik.errors.ownerName && (
-        <Text style={styles.errorText}>{formik.errors.ownerName}</Text>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ handleSubmit }) => (
+        <View style={styles.container}>
+          <FormikTextInput
+            name="ownerName"
+            placeholder="Repository owner name"
+          />
+          <FormikTextInput
+            name="repositoryName"
+            placeholder="Repository name"
+          />
+          <FormikTextInput
+            name="rating"
+            placeholder="Rating between 0 and 100"
+            keyboardType="numeric"
+          />
+          <FormikTextInput name="text" placeholder="Review" multiline />
+          <SubmitButton title="Create a review" onPress={handleSubmit} />
+        </View>
       )}
-      <TextInput
-        placeholder="Repository name"
-        value={formik.values.repositoryName}
-        onChangeText={formik.handleChange("repositoryName")}
-        style={[styles.inputTexts]}
-      />
-      {formik.touched.repositoryName && formik.errors.repositoryName && (
-        <Text style={styles.errorText}>{formik.errors.repositoryName}</Text>
-      )}
-      <TextInput
-        value={formik.values.rating}
-        onChangeText={formik.handleChange("rating")}
-        keyboardType="numeric"
-        style={[styles.inputTexts]}
-        placeholder="Rating between 0 and 100"
-      />
-      {formik.touched.rating && formik.errors.rating && (
-        <Text style={styles.errorText}>{formik.errors.rating}</Text>
-      )}
-      <TextInput
-        value={formik.values.text}
-        onChangeText={formik.handleChange("text")}
-        style={[styles.inputTexts]}
-        placeholder="Review"
-        multiline
-      />
-      <Pressable onPress={formik.handleSubmit} style={styles.submitButton}>
-        <Text fontWeight="bold" color="textSecondary">
-          Create a review
-        </Text>
-      </Pressable>
-    </View>
+    </Formik>
   );
 };
 

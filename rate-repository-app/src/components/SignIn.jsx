@@ -1,81 +1,32 @@
-import { useFormik } from "formik";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
-import Text from "./Text";
+import { StyleSheet, View } from "react-native";
 import theme from "./theme";
 import * as yup from "yup";
 import useSignIn from "../hooks/useSignin";
 import { useNavigate } from "react-router-native";
 import useAuthStorage from "../hooks/useAuthStorage";
 import { useSetUser } from "../contexts/SignedInUserContext";
+import FormikTextInput from "./FormikTextInput";
+import SubmitButton from "./SubmitButton";
+import { Formik } from "formik";
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.secondaryBackground,
     padding: 20,
-    gap: 20,
-  },
-  inputTexts: {
-    height: 60,
-    borderWidth: 1,
-    padding: 10,
-    borderColor: theme.colors.tertiaryBackground,
-    borderRadius: 5,
-    fontSize: theme.fontSizes.body,
-  },
-  textInvalid: {
-    borderColor: theme.colors.errorColor,
-  },
-  submitButton: {
-    backgroundColor: theme.colors.blueBackground,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
   },
 });
 
-export const SignInForm = ({formik}) => {
+const validationSchema = yup.object().shape({
+  username: yup.string().required("Username is required"),
+  password: yup.string().required("Password is required"),
+});
+
+export const SignInForm = ({ handleSubmit }) => {
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Username"
-        value={formik.values.username}
-        onChangeText={formik.handleChange("username")}
-        style={[
-          styles.inputTexts,
-          formik.touched.username &&
-            formik.errors.username &&
-            styles.textInvalid,
-        ]}
-      />
-      {formik.touched.username && formik.errors.username && (
-        <Text style={{ color: "red", fontStyle: "italic" }}>
-          {formik.errors.username}
-        </Text>
-      )}
-      <TextInput
-        placeholder="Password"
-        value={formik.values.password}
-        onChangeText={formik.handleChange("password")}
-        secureTextEntry
-        style={[
-          styles.inputTexts,
-          formik.touched.password &&
-            formik.errors.password &&
-            styles.textInvalid,
-        ]}
-      />
-      {formik.touched.username &&
-        formik.touched.password &&
-        formik.errors.password && (
-          <Text style={{ color: "red", fontStyle: "italic" }}>
-            {formik.errors.password}
-          </Text>
-        )}
-      <Pressable onPress={formik.handleSubmit} style={styles.submitButton}>
-        <Text fontWeight="bold" color="textSecondary">
-          Sign in
-        </Text>
-      </Pressable>
+      <FormikTextInput name="username" placeholder="Username" />
+      <FormikTextInput name="password" placeholder="Password" secureTextEntry />
+      <SubmitButton title="Sign in" onPress={handleSubmit} />
     </View>
   );
 };
@@ -88,33 +39,29 @@ const SignIn = () => {
 
   const navigate = useNavigate();
 
-  const validationSchema = yup.object().shape({
-    username: yup.string().required("Username is required"),
-    password: yup.string().required("Password is required"),
-  });
+  const handleSubmit = async (values) => {
+    const data = await signIn(values);
+    const token = await authStorage.getAccessToken();
+    if (data.authenticate.accessToken === token) {
+      dispatch({ type: "SIGNIN" });
+      navigate("/");
+    }
+  };
 
-  const formik = useFormik({
-    initialValues: {
-      username: "",
-      password: "",
-    },
-    validationSchema,
-    onSubmit: async (values, { resetForm }) => {
-      try {
-        const data = await signIn(values);
-        const token = await authStorage.getAccessToken();
-        if (data.authenticate.accessToken === token) {
-          dispatch({ type: "SIGNIN" });
-          navigate("/");
-        }
-      } catch (e) {
-        console.error(e);
-      }
-      resetForm();
-    },
-  });
+  const initialValues = {
+    username: "",
+    password: "",
+  };
 
-  return <SignInForm formik={formik} />;
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ handleSubmit }) => <SignInForm handleSubmit={handleSubmit} />}
+    </Formik>
+  );
 };
 
 export default SignIn;
