@@ -12,8 +12,7 @@ const styles = StyleSheet.create({
 
 export const ItemSeparator = () => <View style={styles.separator} />;
 
-export const RepositoryListContainer = ({ repositories }) => {
-  const navigate = useNavigate();
+export const RepositoryListContainer = ({ repositories, navigate}) => {
   const repositoryNodes = repositories
     ? repositories.edges.map((edge) => edge.node)
     : [];
@@ -33,10 +32,11 @@ export const RepositoryListContainer = ({ repositories }) => {
 
 const RepositoryList = () => {
   const { loading, error, repositories } = useRepositories();
+  const navigate = useNavigate();
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error fetching data</Text>;
 
-  return <RepositoryListContainer repositories={repositories} />;
+  return <RepositoryListContainer repositories={repositories} navigate={navigate} />;
 };
 
 export default RepositoryList;

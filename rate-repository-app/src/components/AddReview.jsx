@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-native";
 import Text from "./Text";
 import theme from "./theme";
+import { useEffect } from "react";
 
 const styles = StyleSheet.create({
   container: {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
 });
 
 const AddReview = () => {
-  const [createReview] = useCreateReview();
+  const [createReview, result] = useCreateReview();
   const validationSchema = yup.object().shape({
     ownerName: yup.string().required("Repository owner name is required"),
     repositoryName: yup.string().required("Repository name is required"),
@@ -49,6 +50,12 @@ const AddReview = () => {
   });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (result.data && result.data.createReview) {
+      navigate(`/aboutRepo/${result.data.createReview.repositoryId}`);
+    }
+  }, [result.data]);
+
   const formik = useFormik({
     initialValues: {
       ownerName: "",
@@ -57,17 +64,19 @@ const AddReview = () => {
       text: "",
     },
     validationSchema,
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       try {
-        const review = await createReview({ variables: { review: values } });
-        console.log(review);
-        if (!review.errors) {
-          navigate(`/aboutRepo/${review.createReview.repositoryId}`);
-        }
+        await createReview({
+          variables: {
+            review: {
+              ...values,
+              rating: Number(values.rating),
+            },
+          },
+        });
       } catch (e) {
         console.error(e);
       }
-      resetForm();
     },
   });
   return (
@@ -92,7 +101,7 @@ const AddReview = () => {
       )}
       <TextInput
         value={formik.values.rating}
-        onChangeText={(text) => formik.setFieldValue("rating", Number(text))}
+        onChangeText={formik.handleChange("rating")}
         keyboardType="numeric"
         style={[styles.inputTexts]}
         placeholder="Rating between 0 and 100"

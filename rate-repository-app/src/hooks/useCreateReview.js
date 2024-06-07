@@ -8,12 +8,14 @@ const useCreateReview = () => {
       const messages = error.graphQLErrors.map((e) => e.message).join("\n");
       console.error(messages);
     },
-    update: (cache, response) => {
-      cache.updateQuery({ query: GET_REPOSITORY }, ({ repository }) => {
-        return {
-          repository: repository.concat(response.data.createReview),
-        };
-      });
+    refetchQueries: (mutationResult) => {
+      const repositoryId = mutationResult.data.createReview.repositoryId;
+      return [
+        {
+          query: GET_REPOSITORY,
+          variables: { id: repositoryId },
+        },
+      ];
     },
   });
   return [createReview, result];

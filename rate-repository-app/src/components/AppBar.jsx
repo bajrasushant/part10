@@ -7,6 +7,7 @@ import { useQuery } from "@apollo/client";
 import { USER } from "../graphql/queries";
 import { useSetUser, useUser } from "../contexts/SignedInUserContext";
 import useSignOut from "../hooks/useSignout";
+import { useEffect } from "react";
 
 const styles = StyleSheet.create({
   container: {
@@ -32,6 +33,12 @@ const AppBar = () => {
 
   const user = useUser();
 
+  useEffect(() => {
+    if (data && data.me) {
+      dispatch({ type: "SIGNIN" });
+    }
+  }, [data]);
+
   const signout = useSignOut();
 
   if (loading) {
@@ -47,9 +54,6 @@ const AppBar = () => {
     );
   }
 
-  if (data.me) {
-    dispatch({ type: "SIGNIN" });
-  }
 
   return (
     <View style={styles.container}>
