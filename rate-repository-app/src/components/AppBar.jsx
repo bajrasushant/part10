@@ -62,9 +62,14 @@ const AppBar = () => {
           <Text style={styles.appBarTab}>Repositories</Text>
         </Link>
         {!user ? (
+          <>
           <Link to="/signin">
             <Text style={styles.appBarTab}>Sign in</Text>
           </Link>
+          <Link to="/signup">
+            <Text style={styles.appBarTab}>Sign up</Text>
+          </Link>
+          </>
         ) : (
           <>
             <Link to="/create_review">
