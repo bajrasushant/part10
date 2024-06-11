@@ -9,7 +9,7 @@ export default {
   userInterfaceStyle: "light",
   extra: {
     env: process.env.ENV,
-    apollo_uri: process.env.HOME_APOLLO_URI,
+    apollo_uri: process.env.APOLLO_URI,
   },
   splash: {
     image: "./assets/splash.png",
