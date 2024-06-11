@@ -1,6 +1,5 @@
 // import Constants from "expo-constants";
 import { View, StyleSheet } from "react-native";
-import RepositoryList from "./RepositoryList";
 import AppBar from "./AppBar";
 import theme from "./theme";
 import { Navigate, Route, Routes } from "react-router-native";
@@ -8,6 +7,7 @@ import SignIn from "./SignIn";
 import SingleRepositoryItem from "./SingleRepositoryItem";
 import AddReview from "./AddReview";
 import SignUp from "./SignUp";
+import SortingOption from "./SortingOption";
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +22,7 @@ const Main = () => {
     <View style={styles.container}>
       <AppBar />
       <Routes>
-        <Route path="/" element={<RepositoryList />} />
+        <Route path="/" element={<SortingOption />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/create_review" element={<AddReview />} />

@@ -23,7 +23,7 @@ export default function App() {
           </AuthStorageContext.Provider>
         </ApolloProvider>
       </NativeRouter>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </>
   );
 }
