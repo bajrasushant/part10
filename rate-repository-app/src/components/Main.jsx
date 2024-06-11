@@ -7,7 +7,7 @@ import SignIn from "./SignIn";
 import SingleRepositoryItem from "./SingleRepositoryItem";
 import AddReview from "./AddReview";
 import SignUp from "./SignUp";
-import SortingOption from "./SortingOption";
+import RepositoryList from "./RepositoryList";
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +22,7 @@ const Main = () => {
     <View style={styles.container}>
       <AppBar />
       <Routes>
-        <Route path="/" element={<SortingOption />} />
+        <Route path="/" element={<RepositoryList />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/create_review" element={<AddReview />} />
