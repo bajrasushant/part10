@@ -29,7 +29,7 @@ const SingleRepositoryItem = () => {
     error: reviewsError,
   } = useReviews(repoId);
 
-  if (repoLoading || reviewsLoading) return <Text>Loading...</Text>;
+  if (repoLoading || reviewsLoading) return null;
   if (repoError || reviewsError) return <Text>Error fetching data</Text>;
 
   const reviewNodes = reviews ? reviews.edges.map((edge) => edge.node) : [];
