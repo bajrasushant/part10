@@ -36,14 +36,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const ReviewItem = ({ review }) => {
+const ReviewItem = ({ review, personal = false}) => {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.ratingTextContainer}>
         <Text style={styles.ratingText}>{review.rating}</Text>
       </View>
       <View style={styles.secondaryContainer}>
-        <Text fontWeight="bold">{review.user.username}</Text>
+        {personal == true ? (
+          <Text fontWeight="bold">{review.repository.fullName}</Text>
+        ) : (
+          <Text fontWeight="bold">{review.user.username}</Text>
+        )}
         <Text color="textTertiary">{formatDate(review.createdAt)}</Text>
         <Text style={styles.textualReview}>{review.text}</Text>
       </View>

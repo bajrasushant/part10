@@ -54,7 +54,6 @@ const AppBar = () => {
     );
   }
 
-
   return (
     <View style={styles.container}>
       <ScrollView horizontal>
@@ -63,17 +62,20 @@ const AppBar = () => {
         </Link>
         {!user ? (
           <>
-          <Link to="/signin">
-            <Text style={styles.appBarTab}>Sign in</Text>
-          </Link>
-          <Link to="/signup">
-            <Text style={styles.appBarTab}>Sign up</Text>
-          </Link>
+            <Link to="/signin">
+              <Text style={styles.appBarTab}>Sign in</Text>
+            </Link>
+            <Link to="/signup">
+              <Text style={styles.appBarTab}>Sign up</Text>
+            </Link>
           </>
         ) : (
           <>
             <Link to="/create_review">
               <Text style={styles.appBarTab}>Create a review</Text>
+            </Link>
+            <Link to="/my_reviews">
+              <Text style={styles.appBarTab}>My Reviews</Text>
             </Link>
             <Pressable onPress={signout}>
               <Text style={styles.appBarTab}>Sign Out</Text>

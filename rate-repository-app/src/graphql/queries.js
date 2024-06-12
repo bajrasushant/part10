@@ -6,7 +6,11 @@ export const GET_REPOSITORIES = gql`
     $orderDirection: OrderDirection
     $searchKeyword: String
   ) {
-    repositories(orderBy: $orderBy, orderDirection: $orderDirection, searchKeyword: $searchKeyword) {
+    repositories(
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      searchKeyword: $searchKeyword
+    ) {
       totalCount
       edges {
         node {
@@ -30,10 +34,23 @@ export const GET_REPOSITORIES = gql`
 `;
 
 export const USER = gql`
-  query Me {
+  query Me($includeReviews: Boolean = false) {
     me {
       id
       username
+      reviews @include(if: $includeReviews) {
+        edges {
+          node {
+            id
+            text
+            rating
+            repository {
+              fullName
+            }
+            createdAt
+          }
+        }
+      }
     }
   }
 `;
