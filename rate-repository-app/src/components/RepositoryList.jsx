@@ -1,11 +1,12 @@
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import RepositoryItem from "./RepositoryItem";
-import Text from "./Text";
 import { useNavigate } from "react-router-native";
 import useRepositories from "../hooks/useRepositories";
-import { useState } from "react";
+import { useState, Component } from "react";
 import { availableSortingOptions, sortParams } from "../utils/sortingOptions";
 import SortingOption from "./SortingOption";
+import SearchBar from "./SearchBar";
+import { useDebounce } from "use-debounce";
 
 const styles = StyleSheet.create({
   separator: {
@@ -15,29 +16,36 @@ const styles = StyleSheet.create({
 
 export const ItemSeparator = () => <View style={styles.separator} />;
 
-export const RepositoryListContainer = ({
-  repositories,
-  navigate,
-  sortChosen,
-  handleSortOptionChosenChange,
-}) => {
-  const repositoryNodes = repositories
-    ? repositories.edges.map((edge) => edge.node)
-    : [];
+export class RepositoryListContainer extends Component {
+  renderHeader = () => {
+    const { searchQuery, handleSearchQueryChange, sortChosen, handleSortOptionChosenChange } = this.props;
+    return (
+      <>
+        <SearchBar
+          searchQuery={searchQuery}
+          handleSearchQueryChange={handleSearchQueryChange}
+        />
+        <SortingOption
+          sortChosen={sortChosen}
+          handleSortOptionChosenChange={handleSortOptionChosenChange}
+        />
+      </>
+    );
+  };
 
-  return (
-    <>
+  render() {
+    const { repositories, navigate } = this.props;
+    const repositoryNodes = repositories
+      ? repositories.edges.map((edge) => edge.node)
+      : [];
+
+    return (
       <FlatList
         data={repositoryNodes}
         ItemSeparatorComponent={ItemSeparator}
-        ListHeaderComponent={
-          <SortingOption
-            sortChosen={sortChosen}
-            handleSortOptionChosenChange={handleSortOptionChosenChange}
-          />
-        }
+        ListHeaderComponent={this.renderHeader}
         ListHeaderComponentStyle={{
-          zIndex: 2
+          zIndex: 2,
         }}
         renderItem={({ item }) => (
           <Pressable onPress={() => navigate(`/aboutRepo/${item.id}`)}>
@@ -45,24 +53,31 @@ export const RepositoryListContainer = ({
           </Pressable>
         )}
       />
-    </>
-  );
-};
+    )
+  }
+}
+
 
 const RepositoryList = () => {
   const [sortChosen, setSortChosen] = useState(availableSortingOptions[0]);
 
-  const currentSortParam = sortParams[sortChosen];
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { loading, error, repositories } = useRepositories(currentSortParam);
+  const currentSortParam = sortParams[sortChosen];
 
   const handleSortOptionChosenChange = (option) => {
     setSortChosen(option);
   };
 
+  const handleSearchQueryChange = (value) => {
+    setSearchQuery(value);
+  };
+
+  const [searchKeyword] = useDebounce(searchQuery, 500);
+
+  const { repositories } = useRepositories({...currentSortParam, searchKeyword});
+
   const navigate = useNavigate();
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error fetching data</Text>;
 
   return (
     <RepositoryListContainer
@@ -70,6 +85,8 @@ const RepositoryList = () => {
       navigate={navigate}
       sortChosen={sortChosen}
       handleSortOptionChosenChange={handleSortOptionChosenChange}
+      searchQuery={searchQuery}
+      handleSearchQueryChange={handleSearchQueryChange}
     />
   );
 };
