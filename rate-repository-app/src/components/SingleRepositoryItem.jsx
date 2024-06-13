@@ -3,7 +3,6 @@ import Text from "./Text";
 import useRepository from "../hooks/useRepository";
 import RepositoryItem from "./RepositoryItem";
 import { FlatList, View } from "react-native";
-import useReviews from "../hooks/useReviews";
 import { ItemSeparator } from "./RepositoryList";
 import ReviewItem from "./ReviewItem";
 
@@ -19,18 +18,14 @@ const SingleRepositoryItem = () => {
   const { repoId } = useParams();
   const {
     repository,
-    loading: repoLoading,
-    error: repoError,
+    reviews,
+    loading,
+    error,
   } = useRepository(repoId);
 
-  const {
-    reviews,
-    loading: reviewsLoading,
-    error: reviewsError,
-  } = useReviews(repoId);
 
-  if (repoLoading || reviewsLoading) return null;
-  if (repoError || reviewsError) return <Text>Error fetching data</Text>;
+  if (loading) return null;
+  if (error) return <Text>Error fetching data</Text>;
 
   const reviewNodes = reviews ? reviews.edges.map((edge) => edge.node) : [];
 

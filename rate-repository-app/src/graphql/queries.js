@@ -66,7 +66,7 @@ export const USER = gql`
 `;
 
 export const GET_REPOSITORY = gql`
-  query ($repositoryId: ID!) {
+  query Repository($repositoryId: ID!) {
     repository(id: $repositoryId) {
       id
       fullName
@@ -81,16 +81,8 @@ export const GET_REPOSITORY = gql`
       reviewCount
       name
       ratingAverage
-    }
-  }
-`;
-
-export const GET_REVIEWS_ON_REPO = gql`
-  query ($repositoryId: ID!) {
-    repository(id: $repositoryId) {
-      id
-      fullName
       reviews {
+        totalCount
         edges {
           node {
             id
@@ -102,6 +94,12 @@ export const GET_REVIEWS_ON_REPO = gql`
               username
             }
           }
+          cursor
+        }
+        pageInfo {
+          endCursor
+          startCursor
+          hasNextPage
         }
       }
     }

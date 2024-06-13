@@ -7,6 +7,7 @@ const useCreateReview = () => {
     onError: (error) => {
       const messages = error.graphQLErrors.map((e) => e.message).join("\n");
       console.error(messages);
+      throw error;
     },
     refetchQueries: (mutationResult) => {
       const repositoryId = mutationResult.data.createReview.repositoryId;

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import * as yup from "yup";
 import useCreateReview from "../hooks/useCreateReview";
 import { useNavigate } from "react-router-native";
@@ -44,14 +44,18 @@ const AddReview = () => {
   };
 
   const handleSubmit = async (values) => {
-    await createReview({
-      variables: {
-        review: {
-          ...values,
-          rating: Number(values.rating),
+    try {
+      await createReview({
+        variables: {
+          review: {
+            ...values,
+            rating: Number(values.rating),
+          },
         },
-      },
-    });
+      });
+    } catch (err) {
+      Alert.alert("Error", err.message);
+    }
   };
 
   return (

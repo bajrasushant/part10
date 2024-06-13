@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import theme from "./theme";
 import * as yup from "yup";
 import useSignIn from "../hooks/useSignin";
@@ -40,11 +40,15 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
+    try{
     const data = await signIn(values);
     const token = await authStorage.getAccessToken();
     if (data.authenticate.accessToken === token) {
       dispatch({ type: "SIGNIN" });
       navigate("/");
+    }
+    }catch(err){
+      Alert.alert("Error", err.message);
     }
   };
 
