@@ -34,7 +34,7 @@ export class RepositoryListContainer extends Component {
   };
 
   render() {
-    const { repositories, navigate } = this.props;
+    const { repositories, navigate, onEndReach } = this.props;
     const repositoryNodes = repositories
       ? repositories.edges.map((edge) => edge.node)
       : [];
@@ -47,6 +47,8 @@ export class RepositoryListContainer extends Component {
         ListHeaderComponentStyle={{
           zIndex: 2,
         }}
+        onEndReached={onEndReach}
+        onEndReachedThreshold={0.5}
         renderItem={({ item }) => (
           <Pressable onPress={() => navigate(`/aboutRepo/${item.id}`)}>
             <RepositoryItem repository={item} showGithubButton={false} />
@@ -75,9 +77,13 @@ const RepositoryList = () => {
 
   const [searchKeyword] = useDebounce(searchQuery, 500);
 
-  const { repositories } = useRepositories({...currentSortParam, searchKeyword});
+  const { repositories, fetchMore } = useRepositories({...currentSortParam, searchKeyword, first: 5});
 
   const navigate = useNavigate();
+
+  const onEndReach = () => {
+    fetchMore();
+  };
 
   return (
     <RepositoryListContainer
@@ -87,6 +93,7 @@ const RepositoryList = () => {
       handleSortOptionChosenChange={handleSortOptionChosenChange}
       searchQuery={searchQuery}
       handleSearchQueryChange={handleSearchQueryChange}
+      onEndReach={onEndReach}
     />
   );
 };
